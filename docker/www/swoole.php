@@ -1,8 +1,14 @@
 <?php 
-$http = new swoole_http_server("0.0.0.0", 9501);
+
+require 'instrumentation.php';
+require 'dice.php';
+
+$http = new Swoole\Http\Server("0.0.0.0", 9501);
 
 $http->on('request', function ($request, $response) {
-    $response->end("<h1>Hello World. #".rand(1000, 9999)."</h1>");
+    $dice = new Dice();
+
+    $response->end(print_r($dice->roll(10), true));
 });
 
 $http->start();

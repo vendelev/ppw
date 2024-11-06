@@ -1,0 +1,26 @@
+FROM alpine:3.20 as builder
+
+RUN apk add php83-dev \
+    git \
+    gcc \
+    build-base \
+    musl-dev
+
+RUN git clone --branch master --single-branch https://github.com/tony2001/pinba_extension.git 
+
+WORKDIR /pinba_extension
+
+RUN phpize && ./configure && make
+
+FROM php:8.3-fpm-alpine
+
+COPY --from=builder /pinba_extension/modules/pinba.so /usr/local/lib/php/extensions/no-debug-non-zts-20230831/pinba.so
+
+RUN curl -sSLf \
+        -o /usr/local/bin/install-php-extensions \
+        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
+    chmod +x /usr/local/bin/install-php-extensions && \
+    install-php-extensions opentelemetry mysqli opcache
+
+RUN echo "extension=pinba.so" > /usr/local/etc/php/conf.d/pinba.ini
+RUN echo "opcache.enable=1\n opcache.enable_cli=1\n opcache.jit_buffer_size=256M" > /usr/local/etc/php/conf.d/opcache.ini
