@@ -1,10 +1,4 @@
 <?php
-ini_set('pinba.enabled', true);
-ini_set('pinba.server', 'pinba:3002');
-
-
-const USE_PINBA = false;
-
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -13,11 +7,8 @@ use Monolog\Logger;
 use Monolog\Level;
 use Monolog\Handler\StreamHandler;
 
-//$script_name = 'script-' . rand(1,9) . '.php';
-//pinba_script_name_set($script_name);
 
-
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 require('dice.php');
 
@@ -28,7 +19,7 @@ $app = AppFactory::create();
 
 $dice = new Dice();
 
-$app->get('/[{anything}]', function (Request $request, Response $response) use ($logger, $dice) {
+$app->get('/{version}/[{anything}]', function (Request $request, Response $response) use ($logger, $dice) {
     $params = $request->getQueryParams();
 
     if(isset($params['rolls'])) {
@@ -37,7 +28,6 @@ $app->get('/[{anything}]', function (Request $request, Response $response) use (
     } else {
         $response->withStatus(400)->getBody()->write("Please enter a number of rolls");
     }
-
 
     return $response;
 });

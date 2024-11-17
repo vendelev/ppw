@@ -31,6 +31,7 @@ while ($req = $worker->waitRequest()) {
             pinba_script_name_set('worker.php');
         }
 
+
         $parent = TraceContextPropagator::getInstance()->extract($req->getHeaders());
         $rootSpan = $tracer
             ->spanBuilder('root')
@@ -54,6 +55,8 @@ while ($req = $worker->waitRequest()) {
                 }
 
             }
+
+            $rsp->getBody()->write(var_export($req->getUri()->getPath(), true));
 
             $rsp->getBody()->write("Job's done!\n");
 

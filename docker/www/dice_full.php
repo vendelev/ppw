@@ -3,8 +3,6 @@
 use OpenTelemetry\API\Globals;
 use GuzzleHttp\Client;
 
-
-
 class Dice {
 
     public $tracer;
@@ -48,7 +46,7 @@ class Dice {
         }
 
         $client = new Client();
-        $res = $client->request('GET', 'http://echo-server:8088/payload?io_msec=1');
+//        $res = $client->request('GET', 'http://echo-server:8088/payload?io_msec=10');
         $result = random_int(1, 6);
         if (self::USE_OTEL) {
             $span->end();

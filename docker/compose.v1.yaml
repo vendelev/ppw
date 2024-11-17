@@ -1,0 +1,53 @@
+
+services:
+  web:
+    ports:
+      - "80:80"
+    image: nginx:1.27.2
+    hostname: web
+    volumes:
+      - ./Nginx/nginx-config.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      php-composer:
+        condition: service_completed_successfully
+      php-fpm:
+        condition: service_started
+      php-rr:
+        condition: service_started
+  
+
+  php-fpm:
+    image: php:8.3-fpm-alpine
+    hostname: phpfpm
+    volumes:
+      - ./www:/usr/share/www
+    depends_on:
+      php-composer:
+        condition: service_completed_successfully
+
+  php-rr:
+    build:
+      context: RoadRunner
+      dockerfile: Dockerfile.v1
+    hostname: phprr
+    volumes:
+      - ./www:/var/www
+    working_dir: /var/www
+    command: sh -c "rr serve -c v1.rr.yaml"
+    depends_on:
+      php-composer:
+        condition: service_completed_successfully
+
+  php-composer:
+    image: composer/composer:latest
+    volumes:
+      - ./www:/app
+    command: /bin/bash -c "env COMPOSER=composer.v1.json composer update --ignore-platform-reqs"
+
+  echo-server:
+    build:
+      context: EchoService
+      dockerfile: Dockerfile
+    hostname: echo-service
+
+
