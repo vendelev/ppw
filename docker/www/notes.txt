@@ -1,0 +1,11 @@
+docker run --network docker_default elswork/wrk -c5 -t5 -d30 'http://web/v1/index.php?rolls=10'
+docker run --network docker_default elswork/wrk -c5 -t5 -d30 'http://web/phprr/?rolls=10'
+
+docker run --network docker_default elswork/wrk -c5 -t5 -d30 'http://web/index.html'
+
+docker run --rm --network docker_default elswork/wrk -c1 -t1 -d30s 'http://echo-server:8088/payload?io_msec=10'
+
+
+ sudo service nginx stop
+
+ sudo docker run --rm -it -e COMPOSER='composer.v1.json' -v ./www:/app --entrypoint=composer  composer/composer update --ignore-platform-reqs
