@@ -1,8 +1,6 @@
 
 services:
   web:
-    ports:
-      - "80:80"
     image: nginx:1.27.2
     hostname: web
     volumes:
@@ -17,10 +15,14 @@ services:
   
 
   php-fpm:
-    image: php:8.3-fpm-alpine
+    build:
+      context: PHPFpm
+      dockerfile: Dockerfile.v1
     hostname: phpfpm
     volumes:
       - ./www:/usr/share/www
+      - ./PHPFpm/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./PHPFpm/opcache.ini:/usr/local/etc/php/conf.d/opcache.ini
     depends_on:
       php-composer:
         condition: service_completed_successfully
